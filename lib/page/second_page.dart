@@ -21,9 +21,13 @@ class MySecondPage extends StatelessWidget {
                 const Text(
                   'ボタンを押した回数',
                 ),
-                Text(
-                  '${InheritedCounter.of(context).counter}',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                Builder(
+                  builder: (context) {
+                    return Text(
+                      '${MyCounter.of(context).count}',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    );
+                  },
                 ),
               ],
             ),
@@ -37,7 +41,9 @@ class MySecondPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          MyCounter.of(context, rebuild: false).increment();
+        },
         child: const Icon(Icons.add),
       ),
     );

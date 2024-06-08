@@ -11,8 +11,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return const InheritedCounter(
-      counter: 100,
+    return const MyCounter(
       child: MaterialApp(
         home: MyHomePage(),
       ),
@@ -20,20 +19,49 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class InheritedCounter extends InheritedWidget {
-  const InheritedCounter({
-    super.key,
-    required this.counter,
-    //1
+class _InheritedCounter extends InheritedWidget {
+  const _InheritedCounter({
+    required this.data,
     required super.child,
   });
+  final MyCounterState data;
 
-  final int counter;
-
-  static InheritedCounter of(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<InheritedCounter>()!;
-
-  //2
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) => true;
+}
+
+class MyCounter extends StatefulWidget {
+  const MyCounter({
+    super.key,
+    required this.child,
+  });
+
+  final Widget child;
+
+  static MyCounterState of(BuildContext context, {bool rebuild = true}) {
+    return rebuild
+        ? context.dependOnInheritedWidgetOfExactType<_InheritedCounter>()!.data
+        : (context
+                .getElementForInheritedWidgetOfExactType<_InheritedCounter>()!
+                .widget as _InheritedCounter)
+            .data;
+  }
+
+  @override
+  State<MyCounter> createState() => MyCounterState();
+}
+
+class MyCounterState extends State<MyCounter> {
+  int count = 0;
+
+  void increment() => setState(() {
+        count++;
+      });
+  @override
+  Widget build(BuildContext context) {
+    return _InheritedCounter(
+      data: this,
+      child: widget.child,
+    );
+  }
 }
